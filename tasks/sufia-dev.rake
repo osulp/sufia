@@ -5,6 +5,7 @@ RSpec::Core::RakeTask.new(:spec)
 require 'jettywrapper'
 
 require 'engine_cart/rake_task'
+EngineCart.rails_options = '-d mysql'
 
 desc 'Spin up hydra-jetty and run specs'
 task ci: ['engine_cart:generate', 'jetty:clean', 'sufia:jetty:config'] do
