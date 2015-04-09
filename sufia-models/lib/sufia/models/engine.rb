@@ -10,6 +10,7 @@ module Sufia
 
     class Engine < ::Rails::Engine
       require 'sufia/models/resque'
+      require 'active_fedora/noid'
 
       # Set some configuration defaults
       config.persistent_hostpath = "http://localhost/files/"
@@ -17,9 +18,6 @@ module Sufia
       config.ffmpeg_path = 'ffmpeg'
       config.fits_message_length = 5
       config.temp_file_base = nil
-      config.enable_noids = true
-      config.noid_template = '.reeddeeddk'
-      config.minter_statefile = '/tmp/minter-state'
       config.redis_namespace = "sufia"
       config.fits_path = "fits.sh"
       config.enable_contact_form_delivery = false
@@ -29,6 +27,14 @@ module Sufia
       config.queue = Sufia::Resque::Queue
       config.max_notifications_for_dashboard = 5
       config.activity_to_show_default_seconds_since_now = 24*60*60
+
+      # Noid identifiers
+      config.enable_noids = true
+      config.noid_template = '.reeddeeddk'
+      config.minter_statefile = '/tmp/minter-state'
+      config.translate_uri_to_id = ActiveFedora::Noid.config.translate_uri_to_id
+      config.translate_id_to_uri = ActiveFedora::Noid.config.translate_id_to_uri
+      config.treeifier = ->(id) { id }
 
       # Defaulting analytic start date to whenever the file was uploaded by leaving it blank
       config.analytic_start_date = nil
@@ -66,10 +72,12 @@ module Sufia
           Hydra::Derivatives.fits_path      = c.fits_path
           Hydra::Derivatives.enable_ffmpeg  = c.enable_ffmpeg
 
-          ActiveFedora::Base.translate_uri_to_id = ActiveFedora::Noid.config.translate_uri_to_id
-          ActiveFedora::Base.translate_id_to_uri = ActiveFedora::Noid.config.translate_id_to_uri
+          ActiveFedora::Base.translate_uri_to_id = c.translate_uri_to_id
+          ActiveFedora::Base.translate_id_to_uri = c.translate_id_to_uri
+
           ActiveFedora::Noid.config.template = c.noid_template
           ActiveFedora::Noid.config.statefile = c.minter_statefile
+          ActiveFedora::Noid.config.treeifier = c.treeifier
         end
       end
     end
