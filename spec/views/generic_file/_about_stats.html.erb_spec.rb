@@ -14,7 +14,7 @@ describe "generic_files/_about_stats.html.erb" do
     render
   end
 
-  context "when there is an announcement" do
+  context "when there is content for the about stats page" do
     let(:about_stats_value) { "I have info about the stats page!" }
 
     context "when the user can update content" do
@@ -32,7 +32,7 @@ describe "generic_files/_about_stats.html.erb" do
     end
   end
 
-  context "when there is no announcement" do
+  context "when there is no content for the about stats page" do
     let(:about_stats_value) { "" }
 
     context "when the user can update content" do
