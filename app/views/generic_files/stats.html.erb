@@ -5,6 +5,9 @@
 <%= javascript_tag do %>
   <%= render partial: 'generic_files/flot_stats', formats: [:js] %>
 <% end %>
+<div class="about-stats">
+  <%= render partial: 'about_stats' %>
+</div>
 
 <%= content_tag :h1, @generic_file, class: "lower" %>
 
