@@ -15,11 +15,12 @@
       <i class="glyphicon glyphicon-signal large-icon"></i>
       <%= content_tag :strong, @stats.total_pageviews %> views and <%= content_tag :strong, @stats.total_downloads %> downloads since <%= @stats.created.strftime("%B %-d, %Y") %>
     </div>
+    <%= render "page_view_download_table" %>
     <div class="stats-container">
-        <div id="usage-stats" class="stats-placeholder"></div>
-    </div>
-    <div class="stats-container" style="height:150px;">
-        <div id="overview" class="stats-placeholder"></div>
+      <div id="usage-stats" class="stats-placeholder"></div>
+      </div>
+      <div class="stats-container" style="height:150px;">
+      <div id="overview" class="stats-placeholder"></div>
     </div>
   </div>
 </div>
