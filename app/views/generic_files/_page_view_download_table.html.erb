@@ -18,34 +18,22 @@
   </thead>
   <tbody>
     <tr>
-      <td> Page Views </td>
-      <td> Page Views current month - 12 </td>
-      <td> Page Views current month - 11 </td>
-      <td> Page Views current month - 10 </td>
-      <td> Page Views current month - 9 </td>
-      <td> Page Views current month - 8 </td>
-      <td> Page Views current month - 7 </td>
-      <td> Page Views current month - 6 </td>
-      <td> Page Views current month - 5 </td>
-      <td> Page Views current month - 4 </td>
-      <td> Page Views current month - 3 </td>
-      <td> Page Views current month - 2 </td>
-      <td> Page Views current month - 1 </td>
+      <td> Downloads </td>
+      <% @stats.downloads_by_month.keys.sort.each do |month| %>
+        <td>
+        <h3><%= month %></h3>
+        <%= @stats.downloads_by_month[month] %>
+        </td>
+      <% end %>
     </tr>
     <tr>
-      <td> Downloads </td>
-      <td> Downloads current month - 12 </td>
-      <td> Downloads current month - 11 </td>
-      <td> Downloads current month - 10 </td>
-      <td> Downloads current month - 9 </td>
-      <td> Downloads current month - 8 </td>
-      <td> Downloads current month - 7 </td>
-      <td> Downloads current month - 6 </td>
-      <td> Downloads current month - 5 </td>
-      <td> Downloads current month - 4 </td>
-      <td> Downloads current month - 3 </td>
-      <td> Downloads current month - 2 </td>
-      <td> Downloads current month - 1 </td>
+      <td> Page Views </td>
+      <% @stats.pageviews_by_month.keys.sort.each do |month| %>
+        <td>
+        <h3><%= month %></h3>
+        <%= @stats.pageviews_by_month[month] %>
+        </td>
+      <% end %>
     </tr>
   </tbody>
 </table>

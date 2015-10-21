@@ -32,6 +32,14 @@ class FileUsage
     return nil
   end
 
+  def downloads_by_month
+    table_by_month(downloads)
+  end
+
+  def pageviews_by_month
+    table_by_month(pageviews)
+  end
+
   def total_downloads
     downloads.reduce(0) { |total, result| total + result[1].to_i }
   end
@@ -47,4 +55,14 @@ class FileUsage
       { label: "Downloads",  data: downloads }
     ]
   end
+
+  private
+
+  def table_by_month(data)
+    months = data.group_by { |t| Time.at(t.first/1000).to_datetime.at_beginning_of_month.strftime("%Y-%m") }
+    months.each_pair { |key, value| months[key] = value.reduce(0) { |total, result| total + result[1].to_i } }
+    tmp = (1.year.ago.to_date..Date.yesterday).select {|d| d.day == 1} 
+    Hash[tmp.map{|d| [d.strftime("%Y-%m"), 0]}].merge(months)
+  end
+
 end
