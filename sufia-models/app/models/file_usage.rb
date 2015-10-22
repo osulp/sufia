@@ -48,6 +48,16 @@ class FileUsage
     pageviews.reduce(0) { |total, result| total + result[1].to_i }
   end
 
+  def daily_stats_csv(separator = '|')
+    ::CSV.generate do |csv|
+      csv << ["Month", "Year", "Day", "Pageviews", "Downloads"]
+      downloads.map do |key, value|
+        values = Array(value)
+        csv << values.join(separator)
+      end
+    end
+  end
+
   # Package data for visualization using JQuery Flot
   def to_flot
     [
