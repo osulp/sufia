@@ -23,7 +23,7 @@ Sufia::Engine.routes.draw do
       get 'citation'
       get 'stats'
       get 'daily_stats'
-      get 'montly_stats'
+      get 'monthly_stats'
       post 'audit'
     end
   end

@@ -1,5 +1,5 @@
 class FileUsage
-  attr_accessor :id, :created, :path, :downloads, :pageviews
+  attr_accessor :id, :creaFileViewStat.statistics(id, created, user_id)ted, :path, :downloads, :pageviews
 
   def initialize(id)
     file = ::GenericFile.find(id)
@@ -58,6 +58,17 @@ class FileUsage
     end
   end
 
+  def monthly_stats_csv(separator = '|')
+    ::CSV.generate do |csv|
+      csv << ["Month", "Pageviews", "Downloads"]
+      download_months = downloads.group_by { |t| Time.at(t.first/1000).to_datetime.at_beginning_of_month.strftime("%Y-%m") }
+      download_months.each_pair { |key, value| months[key] = value.reduce(0) { |total, result| total + result[1].to_i } values = Array(key,'0',months[key]) values.join(separator)}
+      pageview_months = pageviews.group_by { |t| Time.at(t.first/1000).to_datetime.at_beginning_of_month.strftime("%Y-%m") }
+      pageview_months.each_pair { |key, value| months[key] = value.reduce(0) { |total, result| total + result[1].to_i } values = Array(key,months[key],'0') values.join(separat
+or)}
+    end
+  end
+  
   # Package data for visualization using JQuery Flot
   def to_flot
     [

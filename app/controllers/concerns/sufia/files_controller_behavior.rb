@@ -44,7 +44,7 @@ module Sufia
         find_collections_with_edit_access(true, -1, t("sufia.upload.collection.select_default_option"))
       end
       load_resource only: [:audit]
-      load_and_authorize_resource except: [:index, :audit, :show, :daily_stats]
+      load_and_authorize_resource except: [:index, :audit, :show, :daily_stats, :monthly_stats]
 
       # since we are only displaying data we are makingthe show action fast by loading the information from solr
       # these two steps replace load_and_authorize_resource for the show action
@@ -85,12 +85,12 @@ module Sufia
       end
     end
 
-    # routed to /files/:id/montly_stats
-    # def montly_stats
-    #   respond_to do |format|
-    #     format.csv { send_data @stats.montly_stats.to_csv }
-    #   end
-    # end
+    # routed to /files/:id/monthly_stats
+    def monthly_stats
+      respond_to do |format|
+        format.csv { send_data @stats.monthly_stats.to_csv }
+      end
+    end
 
     # routed to /files/:id (DELETE)
     def destroy
