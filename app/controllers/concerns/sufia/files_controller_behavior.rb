@@ -76,6 +76,10 @@ module Sufia
     # routed to /files/:id/stats
     def stats
       @about_stats_text = ContentBlock.find_or_create_by(name: ContentBlock::ABOUTSTATS)
+      @about_stats_table_text = ContentBlock.find_or_create_by(name: ContentBlock::ABOUTSTATSTABLE)
+      @about_stats_graph_text = ContentBlock.find_or_create_by(name: ContentBlock::ABOUTSTATSGRAPH)
+      @about_stats_overview_text = ContentBlock.find_or_create_by(name: ContentBlock::ABOUTSTATSOVERVIEW)
+
       @stats = FileUsage.new(params[:id])
     end
 

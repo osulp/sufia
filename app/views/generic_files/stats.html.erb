@@ -5,25 +5,40 @@
 <%= javascript_tag do %>
   <%= render partial: 'generic_files/flot_stats', formats: [:js] %>
 <% end %>
-<div class="about-stats">
-  <%= render partial: 'about_stats' %>
-</div>
 
 <%= content_tag :h1, @generic_file, class: "lower" %>
 
 <div class="row">
   <div class="col-sm-12">
     <%= content_tag :h2, "Analytics" %>
+
+    <div class="about-stats">
+      <%= render partial: 'about_stats', locals: {about_block: @about_stats_text} %>
+    </div>
+
     <div class="alert alert-info">
       <i class="glyphicon glyphicon-signal large-icon"></i>
       <%= content_tag :strong, @stats.total_pageviews %> views and <%= content_tag :strong, @stats.total_downloads %> downloads since <%= @stats.created.strftime("%B %-d, %Y") %>
     </div>
+
     <%= render "page_view_download_table" %>
+    <div class="about-stats">
+      <%= render partial: 'about_stats', locals: {about_block: @about_stats_table_text} %>
+    </div>
+
     <div class="stats-container">
       <div id="usage-stats" class="stats-placeholder"></div>
-      </div>
-      <div class="stats-container" style="height:150px;">
+    </div>
+    <div class="about-stats">
+      <%= render partial: 'about_stats', locals: {about_block: @about_stats_graph_text} %>
+    </div>
+
+    <div class="stats-container" style="height:150px;">
       <div id="overview" class="stats-placeholder"></div>
     </div>
+    <div class="about-stats">
+      <%= render partial: 'about_stats', locals: {about_block: @about_stats_overview_text} %>
+    </div>
+
   </div>
 </div>
