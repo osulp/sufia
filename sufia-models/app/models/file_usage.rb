@@ -26,6 +26,12 @@ class FileUsage
     earliest > date_analytics ? earliest : date_analytics
   end
 
+  def date_list_for_monthly_table
+    (0..11).reverse_each.map do |months_ago|
+      Date.today.months_ago(months_ago).strftime("%B %Y")
+    end
+  end
+
   def string_to_date(date_str)
     return DateTime.parse(date_str)
   rescue ArgumentError, TypeError
@@ -41,11 +47,11 @@ class FileUsage
   end
 
   def total_downloads
-    downloads.reduce(0) { |total, result| total + result[1].to_i }
+    reduce_analytics_value(downloads)
   end
 
   def total_pageviews
-    pageviews.reduce(0) { |total, result| total + result[1].to_i }
+    reduce_analytics_value(pageviews)
   end
 
   def daily_stats()
@@ -91,11 +97,21 @@ class FileUsage
 
   private
 
-  def table_by_month(data)
-    months = data.group_by { |t| Time.at(t.first/1000).to_datetime.at_beginning_of_month.strftime("%Y-%m") }
-    months.each_pair { |key, value| months[key] = value.reduce(0) { |total, result| total + result[1].to_i } }
-    tmp = (1.year.ago.to_date..Date.yesterday).select {|d| d.day == 1} 
-    Hash[tmp.map{|d| [d.strftime("%Y-%m"), 0]}].merge(months)
-  end
+    def table_by_month(data)
+      months = converted_data(data)
+      months.each_pair { |key, value| months[key] = reduce_analytics_value(value) }
+      Hash[default_date_hash].merge(months)
+    end
 
+    def default_date_hash
+      date_list_for_monthly_table.map { |d| [d, 0] }
+    end
+
+    def converted_data(data)
+      data.group_by { |t| Time.at(t.first / 1000).to_datetime.strftime("%B %Y") }
+    end
+
+    def reduce_analytics_value(value)
+      value.reduce(0) { |total, result| total + result[1].to_i }
+    end
 end
