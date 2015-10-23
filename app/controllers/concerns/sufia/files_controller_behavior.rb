@@ -81,14 +81,14 @@ module Sufia
     # routed to /files/:id/daily_stats
     def daily_stats
       respond_to do |format|
-        format.csv { send_data stats.daily_stats_csv }
+        format.csv { send_data stats.daily_stats, filename: "daily_stats_#{params[:id]}.csv" }
       end
     end
 
     # routed to /files/:id/monthly_stats
     def monthly_stats
       respond_to do |format|
-        format.csv { send_data @stats.monthly_stats.to_csv }
+        format.csv { send_data stats.monthly_stats_csv }
       end
     end
 

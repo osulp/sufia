@@ -1,5 +1,5 @@
 class FileUsage
-  attr_accessor :id, :creaFileViewStat.statistics(id, created, user_id)ted, :path, :downloads, :pageviews
+  attr_accessor :id, :created, :path, :downloads, :pageviews
 
   def initialize(id)
     file = ::GenericFile.find(id)
@@ -48,12 +48,24 @@ class FileUsage
     pageviews.reduce(0) { |total, result| total + result[1].to_i }
   end
 
-  def daily_stats_csv(separator = '|')
+  def daily_stats()
+    d = downloads.map { |i| Hash[*i] }
+    p = pageviews.map { |i| Hash[*i] }
+    daily_downloads = d.map { |h| h.map { |k,v| { k => { downloads: v} } } }.flatten
+    daily_pageviews = p.map { |h| h.map { |k,v| { k => { pageviews: v} } } }.flatten
+    daily_stats = [daily_downloads, daily_pageviews].flatten.inject({}) { |h,v| h[v.keys.first]||=[]; h[v.keys.first] << v.values; h }
+    daily_stats_clean = daily_stats.map { |m| {m.first => m.last.flatten.inject(:merge)}}
+    to_csv(daily_stats_clean)
+  end
+
+  def to_csv(data)
     ::CSV.generate do |csv|
-      csv << ["Month", "Year", "Day", "Pageviews", "Downloads"]
-      downloads.map do |key, value|
-        values = Array(value)
-        csv << values.join(separator)
+      csv << Array("This file was generated on #{DateTime.now.strftime("%Y-%m-%d %H:%M:%S")} and represents statistics for the item at #{path}")
+      csv << ["Year", "Month", "Day", "Pageviews", "Downloads"]
+      data.each do |item|
+        date = Time.at(item.first.first/1000).to_datetime
+        values = Array([date.year, date.month, date.day, item[item.first.first][:pageviews] || 0, item[item.first.first][:downloads] || 0])
+        csv << values
       end
     end
   end
@@ -61,14 +73,14 @@ class FileUsage
   def monthly_stats_csv(separator = '|')
     ::CSV.generate do |csv|
       csv << ["Month", "Pageviews", "Downloads"]
-      download_months = downloads.group_by { |t| Time.at(t.first/1000).to_datetime.at_beginning_of_month.strftime("%Y-%m") }
-      download_months.each_pair { |key, value| months[key] = value.reduce(0) { |total, result| total + result[1].to_i } values = Array(key,'0',months[key]) values.join(separator)}
-      pageview_months = pageviews.group_by { |t| Time.at(t.first/1000).to_datetime.at_beginning_of_month.strftime("%Y-%m") }
-      pageview_months.each_pair { |key, value| months[key] = value.reduce(0) { |total, result| total + result[1].to_i } values = Array(key,months[key],'0') values.join(separat
-or)}
+      # TODO: Work in progress
+      # download_months = downloads.group_by { |t| Time.at(t.first/1000).to_datetime.at_beginning_of_month.strftime("%Y-%m") }
+      # download_months.each_pair { |key, value| download_months[key] = value.reduce(0) { |total, result| total + result[1].to_i }} 
+      # pageview_months = pageviews.group_by { |t| Time.at(t.first/1000).to_datetime.at_beginning_of_month.strftime("%Y-%m") }
+      # pageview_months.each_pair { |key, value| pageview_months[key] = value.reduce(0) { |total, result| total + result[1].to_i }} 
     end
   end
-  
+
   # Package data for visualization using JQuery Flot
   def to_flot
     [
