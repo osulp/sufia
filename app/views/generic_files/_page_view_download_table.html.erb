@@ -1,0 +1,40 @@
+<table class="table table table-bordered">
+  <thead>
+    <tr>
+      <th> X </th>
+      <th>current month - 12</th>
+      <th>current month - 11</th>
+      <th>current month - 10</th>
+      <th>current month - 9</th>
+      <th>current month - 8</th>
+      <th>current month - 7</th>
+      <th>current month - 6</th>
+      <th>current month - 5</th>
+      <th>current month - 4</th>
+      <th>current month - 3</th>
+      <th>current month - 2</th>
+      <th>current month - 1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> Downloads </td>
+      <% @stats.downloads_by_month.keys.sort.each do |month| %>
+        <td>
+        <h3><%= month %></h3>
+        <%= @stats.downloads_by_month[month] %>
+        </td>
+      <% end %>
+    </tr>
+    <tr>
+      <td> Page Views </td>
+      <% @stats.pageviews_by_month.keys.sort.each do |month| %>
+        <td>
+        <h3><%= month %></h3>
+        <%= @stats.pageviews_by_month[month] %>
+        </td>
+      <% end %>
+    </tr>
+  </tbody>
+</table>
+<%= link_to "Daily Stats (CSV)", "/files/#{params[:id]}/daily_stats.csv" %>
