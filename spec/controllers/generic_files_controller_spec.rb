@@ -362,6 +362,15 @@ describe GenericFilesController do
         expect(response).to render_template(:stats)
       end
 
+      it "sets about stats text" do
+        get :stats, id: generic_file
+        expect(response).to be_success
+        assigns(:about_stats_text).tap do |about_stats|
+          expect(about_stats).to be_kind_of ContentBlock
+          expect(about_stats.name).to eq 'about_stats_text'
+        end
+      end
+
       context "user is not signed in but the file is public" do
         before do
           generic_file.read_groups = ['public']
