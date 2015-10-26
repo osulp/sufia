@@ -54,7 +54,7 @@ class FileUsage
     reduce_analytics_value(pageviews)
   end
 
-  def daily_stats()
+  def daily_stats
     d = downloads.map { |i| Hash[*i] }
     p = pageviews.map { |i| Hash[*i] }
     daily_downloads = d.map { |h| h.map { |k,v| { k => { downloads: v} } } }.flatten
@@ -65,8 +65,9 @@ class FileUsage
   end
 
   def to_csv(data)
+    title = GenericFile.find(id).title.first
     ::CSV.generate do |csv|
-      csv << Array("This file was generated on #{DateTime.now.strftime("%Y-%m-%d %H:%M:%S")} and represents statistics for the item at #{path}")
+      csv << Array("This file was generated on #{DateTime.now.strftime("%Y-%m-%d %H:%M:%S")} and represents statistics for the item at path: #{path}, title: #{title}")
       csv << ["Year", "Month", "Day", "Pageviews", "Downloads"]
       data.each do |item|
         date = Time.at(item.first.first/1000).to_datetime
@@ -76,14 +77,29 @@ class FileUsage
     end
   end
 
-  def monthly_stats_csv(separator = '|')
+  def monthly_stats_csv
+    download_months = converted_data(downloads)
+    download_months.each_pair { |key, value| download_months[key] = reduce_analytics_value(value) }
+
+    pageview_months = converted_data(pageviews)
+    pageview_months.each_pair { |key, value| pageview_months[key] = reduce_analytics_value(value) }
+
+    d = download_months.to_a.map { |i| Hash[*i] }
+    p = pageview_months.to_a.map { |i| Hash[*i] }
+    daily_downloads = d.map { |h| h.map { |k,v| { k => { downloads: v} } } }.flatten
+    daily_pageviews = p.map { |h| h.map { |k,v| { k => { pageviews: v} } } }.flatten
+    monthly_stats = [daily_downloads, daily_pageviews].flatten.inject({}) { |h,v| h[v.keys.first]||=[]; h[v.keys.first] << v.values; h }
+    monthly_stats_clean = monthly_stats.map { |m| {m.first => m.last.flatten.inject(:merge)}}
+
+    title = GenericFile.find(id).title.first
     ::CSV.generate do |csv|
-      csv << ["Month", "Pageviews", "Downloads"]
-      # TODO: Work in progress
-      # download_months = downloads.group_by { |t| Time.at(t.first/1000).to_datetime.at_beginning_of_month.strftime("%Y-%m") }
-      # download_months.each_pair { |key, value| download_months[key] = value.reduce(0) { |total, result| total + result[1].to_i }} 
-      # pageview_months = pageviews.group_by { |t| Time.at(t.first/1000).to_datetime.at_beginning_of_month.strftime("%Y-%m") }
-      # pageview_months.each_pair { |key, value| pageview_months[key] = value.reduce(0) { |total, result| total + result[1].to_i }} 
+      csv << Array("This file was generated on #{DateTime.now.strftime("%Y-%m-%d %H:%M:%S")} and represents statistics for the item at path: #{path}, title: #{title}")
+      csv << ["Year", "Month", "Pageviews", "Downloads"]
+      monthly_stats_clean.each do |item|
+        date = item.keys.first.to_datetime
+        values = Array([date.year, date.month, item[item.first.first][:pageviews] || 0, item[item.first.first][:downloads] || 0])
+        csv << values
+      end
     end
   end
 

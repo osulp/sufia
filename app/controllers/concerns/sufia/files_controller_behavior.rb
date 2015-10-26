@@ -37,7 +37,7 @@ module Sufia
 
       # actions: audit, index, create, new, edit, show, update,
       #          destroy, permissions, citation, stats
-      before_action :authenticate_user!, except: [:show, :citation, :stats]
+      before_action :authenticate_user!, except: [:show, :citation, :stats, :daily_stats, :monthly_stats]
       before_action :has_access?, except: [:show]
       before_action :build_breadcrumbs, only: [:show, :edit, :stats]
       before_action only: [:new] do
@@ -93,7 +93,7 @@ module Sufia
     # routed to /files/:id/monthly_stats
     def monthly_stats
       respond_to do |format|
-        format.csv { send_data stats.monthly_stats_csv }
+        format.csv { send_data stats.monthly_stats_csv, filename: "monthly_stats_#{params[:id]}.csv" }
       end
     end
 
