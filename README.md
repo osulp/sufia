@@ -27,7 +27,7 @@
     * [Database tables and indexes](#database-tables-and-indexes)
     * [Solr and Fedora](#solr-and-fedora)
     * [Start background workers](#start-background-workers)
-    * [View resque jobs](#view-resque-jobs)
+    * [Monitor background workers](#monitor-background-workers)
     * [Audiovisual transcoding](#audiovisual-transcoding)
     * [User interface](#user-interface)
     * [Integration with Dropbox, Box, etc.](#integration-with-dropbox-box-etc)
@@ -37,7 +37,6 @@
     * [Zotero integration](#zotero-integration)
     * [Tag Cloud](#tag-cloud)
     * [Customizing metadata](#customizing-metadata)
-    * [Proxies and Transfers (Sufia 4.x only)](#proxies-and-transfers-sufia-4x-only)
     * [Admin Users](#admin-users)
       * [One time setup for first admin](#one-time-setup-for-first-admin)
       * [Adding an admin user](#adding-an-admin-user)
@@ -91,7 +90,7 @@ If you have questions or need help, please email [the Hydra community tech list]
 # Creating a Sufia-based app
 
 This document contains instructions specific to setting up an app with __Sufia
-v6.3.0__. If you are looking for instructions on installing a different
+v6.4.0__. If you are looking for instructions on installing a different
 version, be sure to select the appropriate branch or tag from the drop-down
 menu above.
 
@@ -99,8 +98,8 @@ menu above.
 
 Sufia requires the following software to work:
 
-1. Solr
-1. [Fedora Commons](http://www.fedora-commons.org/) digital repository
+1. Solr (tested with Solr 4.x)
+1. [Fedora 4](http://www.fedora-commons.org/) repository
 1. A SQL RDBMS (MySQL, PostgreSQL), though **note** that SQLite will be used by default if you're looking to get up and running quickly
 1. [Redis](http://redis.io/) key-value store
 1. [ImageMagick](http://www.imagemagick.org/)
@@ -143,7 +142,7 @@ rails new my_app
 Add the following lines to your application's Gemfile.
 
 ```
-gem 'sufia', '6.3.0'
+gem 'sufia', '6.4.0'
 gem 'kaminari', github: 'jcoyne/kaminari', branch: 'sufia'  # required to handle pagination properly in dashboard. See https://github.com/amatsuda/kaminari/pull/322
 ```
 
@@ -172,7 +171,7 @@ rake db:migrate
 
 ## Solr and Fedora
 
-If you already have instances of Solr and Fedora that you would like to use, you may skip this step. Otherwise feel free to use [hydra-jetty](https://github.com/projecthydra/hydra-jetty), the bundled copy of Jetty, a Java servlet container that is configured to run versions of Solr and Fedora that are known to work with Sufia. Hydra-jetty (since v8.4.0) requires Java 8.
+If you already have instances of Solr and Fedora 4 that you would like to use, you may skip this step. Otherwise feel free to use [hydra-jetty](https://github.com/projecthydra/hydra-jetty), the bundled copy of Jetty, a Java servlet container that is configured to run versions of Solr and Fedora that are known to work with Sufia. Hydra-jetty (since v8.4.0) requires Java 8.
 
 The following rake tasks will install hydra-jetty and start up Jetty with Solr and Fedora.
 
@@ -184,25 +183,27 @@ rake jetty:start
 
 ## Start background workers
 
-Sufia uses a queuing system named Resque to manage long-running or slow processes. Resque relies on the [redis](http://redis.io/) key-value store, so [redis](http://redis.io/) must be installed *and running* on your system in order for background workers to pick up jobs.
+Sufia uses a queuing system named Resque to manage long-running or slow processes. Resque relies on the [Redis](http://redis.io/) key-value store, so [Redis](http://redis.io/) must be installed *and running* on your system in order for background workers to pick up jobs.
 
-Unless redis has already been started, you will want to start it up. You can do this either by calling the `redis-server` command, or if you're on certain Linuxes, you can do this via `sudo service redis-server start`.
+Unless Redis has already been started, you will want to start it up. You can do this either by calling the `redis-server` command, or if you're on certain Linuxes, you can do this via `sudo service redis-server start`.
 
-Next you will need to spawn Resque's workers. The following command will run until you stop it, so you may want to do this in a dedicated terminal.
-
-```
-QUEUE=* rake environment resque:work
-```
-
-Or, if you prefer (e.g., in production-like environments), you may want to set up a `config/resque-pool.yml` -- [here is a simple example](https://github.com/projecthydra/sufia/blob/master/sufia-models/lib/generators/sufia/models/templates/config/resque-pool.yml) -- and run resque-pool which will manage your background workers in a dedicated process.
+Next you will need to start up the Resque workers provided by Sufia. The following command will run until you stop it, so you may want to do this in a dedicated terminal.
 
 ```
-resque-pool --daemon --environment development start
+RUN_AT_EXIT_HOOKS=true TERM_CHILD=1 QUEUE=* rake environment resque:work
 ```
 
-See https://github.com/defunkt/resque for more options. If you do wind up using resque-pool, you might also be interested in a shell script to help manage it. [Here is an example](https://github.com/psu-stewardship/scholarsphere/blob/develop/script/restart_resque.sh) which you can adapt for your needs.
+Or, if you prefer (e.g., in production-like environments), you may want to set up a `config/resque-pool.yml` file -- [here is a simple example](https://github.com/projecthydra/sufia/blob/master/sufia-models/lib/generators/sufia/models/templates/config/resque-pool.yml) -- and run `resque-pool` (at the root of your rails app) which will manage your background workers in a dedicated process.
 
-## View resque jobs
+```
+RUN_AT_EXIT_HOOKS=true TERM_CHILD=1 bundle exec resque-pool --daemon --environment development start
+```
+
+Occasionally, Resque may not give background jobs a chance to clean up temporary files. The `RUN_AT_EXIT_HOOKS` variable allows Resque to do so. The `TERM_CHILD` variable allows workers to terminate gracefully rather than interrupting currently running workers. For more information on the signals that Resque responds to, see the [resque-pool documentation](https://github.com/nevans/resque-pool#signals).
+
+See https://github.com/defunkt/resque for more options. If you use resque-pool, you may also be interested in a shell script to help manage it. [Here is an example](https://github.com/psu-stewardship/scholarsphere/blob/develop/script/restart_resque.sh) which you can adapt for your own needs.
+
+## Monitor background workers
 
 Edit config/initializers/resque_admin.rb so that ResqueAdmin#matches? returns a true value for the user/s who should be able to access this page. One fast way to do this is to return current_user.admin? and add an admin? method to your user model which checks for specific emails.
 
@@ -344,10 +345,6 @@ The contents of the cloud are retrieved as JSON from Blacklight's CatalogControl
 ## Customizing metadata
 
 Chances are you will want to customize the default metadata provided by Sufia.  Here's [a guide](https://github.com/projecthydra/sufia/wiki/Customizing-Metadata) to help you with that
-
-## Proxies and Transfers (Sufia 4.x only)
-
-To add proxies and transfers to your **Sufia 4**-based app, run the 'sufia:models:proxies' generator and then run 'rake db:migrate'.  If you're already running Sufia 5 or 6, this is already added and you may skip this step.
 
 ## Admin Users
 

@@ -26,11 +26,15 @@ module Sufia
       config.analytics = false
       config.citations = false
       config.upload_to_collection = false
+      config.lock_retry_count = 600 # Up to 2 minutes of trying at intervals up to 200ms
+      config.lock_time_to_live = 60_000 # milliseconds
+      config.lock_retry_delay = 200 # milliseconds
       config.queue = Sufia::Resque::Queue
       config.max_notifications_for_dashboard = 5
       config.activity_to_show_default_seconds_since_now = 24 * 60 * 60
       config.arkivo_api = false
       config.retry_unless_sleep = 0.0
+      config.geonames_username = ""
 
       # Noid identifiers
       config.enable_noids = true

@@ -15,9 +15,7 @@ This generator makes the following changes to your application:
  8. Runs cached stats generator
  9. Runs ORCID field generator
 10. Runs user stats generator
-11. Runs citation config generator
-12. Runs upload_to_collection config generator
-13. Generates mini-magick config
+11. Generates mini-magick config
        """
   def banner
     say_status("info", "GENERATING SUFIA MODELS", :blue)
@@ -113,18 +111,8 @@ This generator makes the following changes to your application:
     generate 'sufia:models:clamav'
   end
 
-  # Adds citations initialization
-  def citation_config
-    generate 'sufia:models:citation_config'
-  end
-
-  # Adds upload_to_collection initialization
-  def upload_to_collection_config
-    generate 'sufia:models:upload_to_collection_config'
-  end
-
   # Add mini-magick configuration
-  def minimagic_config
+  def minimagick_config
     generate 'sufia:models:minimagick_config'
   end
 end

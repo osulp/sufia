@@ -49,6 +49,7 @@ pkg/
 spec/dummy/db/*.sqlite3
 spec/dummy/log/*.log
 spec/dummy/tmp/
+.internal_test_app/**/*
 
 spec/mock_upload_directory
 
@@ -61,6 +62,7 @@ db/*.sqlite3
 db/*.sqlite3-journal
 log/*.log
 tmp
+.byebug_history
 
 *.sqlite3
 *.log
@@ -97,5 +99,3 @@ public/system/
 
 ## Sitemap
 public/sitemap.xml
-
-./spec/internal

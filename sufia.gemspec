@@ -18,7 +18,7 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency 'sufia-models', version
   gem.add_dependency 'blacklight_advanced_search', ['>= 5.1.4', '< 6.0']
-  gem.add_dependency 'blacklight', '~> 5.12'
+  gem.add_dependency 'blacklight', '~> 5.16'
   gem.add_dependency 'railties', '>= 4.2.0'
   gem.add_dependency 'tinymce-rails', '~> 4.1'
   gem.add_dependency 'tinymce-rails-imageupload', '~> 4.0.16.beta'
@@ -43,8 +43,9 @@ Gem::Specification.new do |gem|
   gem.add_dependency "devise", "~> 3.0"
   gem.add_dependency 'json-schema'
   gem.add_dependency 'oauth'
+  gem.add_dependency 'redlock', '~> 0.1.2'
 
-  gem.add_development_dependency 'engine_cart', '~> 0.5'
+  gem.add_development_dependency 'engine_cart', '~> 0.8'
   gem.add_development_dependency 'mida', '~> 0.3'
   gem.add_development_dependency 'database_cleaner', '~> 1.3'
   gem.add_development_dependency 'rspec-rails', '~> 3.1'
