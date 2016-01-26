@@ -28,7 +28,7 @@ class FileUsage
 
   def date_list_for_monthly_table
     (0..11).reverse_each.map do |months_ago|
-      Date.today.months_ago(months_ago).strftime("%B %Y")
+      Date.today.months_ago(months_ago).strftime("%b %Y")
     end
   end
 
@@ -123,7 +123,7 @@ class FileUsage
     end
 
     def converted_data(data)
-      data.group_by { |t| Time.at(t.first / 1000).to_datetime.strftime("%B %Y") }
+      data.group_by { |t| Time.at(t.first / 1000).to_datetime.strftime("%b %Y") }
     end
 
     def reduce_analytics_value(value)
