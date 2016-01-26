@@ -56,29 +56,13 @@ class FileUsage
 
   def daily_stats_csv
     sort_daily_stats = daily_stats.sort_by { |k, _v| Time.at(k / 1000).to_datetime }
-    daily_stats_clean = sort_daily_stats.map { |m| { m.first => m.last.flatten.inject(:merge) } }
-    ::CSV.generate do |csv|
-      csv << ["Year", "Month", "Day", "Pageviews", "Downloads"]
-      daily_stats_clean.each do |item|
-        date = Time.at(item.first.first / 1000).to_datetime
-        values = Array([date.year, date.month, date.day, item[item.first.first][:pageviews] || 0, item[item.first.first][:downloads] || 0])
-        csv << values
-      end
-    end
+    data = sort_daily_stats.map { |m| { Time.at(m.first / 1000) => m.last.flatten.inject(:merge) } }
+    to_csv(data, ["Year", "Month", "Day", "Pageviews", "Downloads"])
   end
 
   def monthly_stats_csv
-    sort_monthly_stats =  monthly_stats.sort_by { |k, _v| k.to_date }
-    monthly_stats_clean = sort_monthly_stats.map { |m| { m.first => m.last.flatten.inject(:merge) } }
-
-    ::CSV.generate do |csv|
-      csv << ["Year", "Month", "Pageviews", "Downloads"]
-      monthly_stats_clean.each do |item|
-        date = item.keys.first.to_datetime
-        values = Array([date.year, date.month, item[item.first.first][:pageviews] || 0, item[item.first.first][:downloads] || 0])
-        csv << values
-      end
-    end
+    sort_monthly_stats = monthly_stats.sort_by { |k, _v| k.to_date }.map { |m| { m.first => m.last.flatten.inject(:merge) } }
+    to_csv(sort_monthly_stats, ["Year", "Month", "Pageviews", "Downloads"])
   end
 
   # Package data for visualization using JQuery Flot
@@ -91,36 +75,33 @@ class FileUsage
 
   private
 
+    def to_csv(data, headers)
+      ::CSV.generate do |csv|
+        csv << headers
+        data.each do |item|
+          date = item.keys.first.to_datetime
+          values = Array([date.year, date.month, item[item.first.first][:pageviews] || 0, item[item.first.first][:downloads] || 0])
+          csv << values
+        end
+      end
+    end
+
     def daily_stats
+      daily_download_stats = stats_hash(downloads).map { |h| h.map { |k, v| { k => { downloads: v } } } }.flatten
+      daily_pageview_stats = stats_hash(pageviews).map { |h| h.map { |k, v| { k => { pageviews: v } } } }.flatten
       combine_stats(daily_download_stats, daily_pageview_stats)
     end
 
     def monthly_stats
+      monthly_download_stats = stats_hash(downloads_by_month.to_a).map { |h| h.map { |k, v| { k => { downloads: v } } } }.flatten
+      monthly_pageview_stats = stats_hash(pageviews_by_month.to_a).map { |h| h.map { |k, v| { k => { pageviews: v } } } }.flatten
       combine_stats(monthly_download_stats, monthly_pageview_stats)
     end
 
     def combine_stats(a, b)
-      [a, b].flatten.inject({}) do |h, v|
-        h[v.keys.first] ||= []
-        h[v.keys.first] << v.values
-        h
+      [a, b].flatten.each_with_object({}) do |v, h|
+        (h[v.keys.first] ||= []) << v.values
       end
-    end
-
-    def daily_download_stats
-      stats_hash(downloads).map { |h| h.map { |k, v| { k => { downloads: v } } } }.flatten
-    end
-
-    def daily_pageview_stats
-      stats_hash(pageviews).map { |h| h.map { |k, v| { k => { pageviews: v } } } }.flatten
-    end
-
-    def monthly_download_stats
-      stats_hash(downloads_by_month.to_a).map { |h| h.map { |k, v| { k => { downloads: v } } } }.flatten
-    end
-
-    def monthly_pageview_stats
-      stats_hash(pageviews_by_month.to_a).map { |h| h.map { |k, v| { k => { pageviews: v } } } }.flatten
     end
 
     def stats_hash(data)

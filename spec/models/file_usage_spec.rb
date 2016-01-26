@@ -90,7 +90,7 @@ describe FileUsage, type: :model do
     end
 
     it "returns a hash of 12 months with file downloads" do
-      expect(usage.downloads_by_month).to be_type_of HASH
+      expect(usage.downloads_by_month).to be_a_kind_of Hash
     end
 
     it "counts the total numver of pageviews" do
