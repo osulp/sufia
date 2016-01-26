@@ -75,12 +75,16 @@ class FileUsage
 
   private
 
-    def to_csv(data, headers)
+    def to_csv(data, header)
       ::CSV.generate do |csv|
-        csv << headers
+        csv << header
         data.each do |item|
           date = item.keys.first.to_datetime
-          values = Array([date.year, date.month, item[item.first.first][:pageviews] || 0, item[item.first.first][:downloads] || 0])
+          if header.include? 'Day'
+            values = Array([date.year, date.month, date.day, item[item.first.first][:pageviews] || 0, item[item.first.first][:downloads] || 0])
+          else
+            values = Array([date.year, date.month, item[item.first.first][:pageviews] || 0, item[item.first.first][:downloads] || 0])
+          end
           csv << values
         end
       end
