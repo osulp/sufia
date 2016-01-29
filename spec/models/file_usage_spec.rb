@@ -90,7 +90,7 @@ describe FileUsage, type: :model do
     end
 
     it "returns a hash of 12 months with file downloads" do
-      expect(usage.downloads_by_month).to be_a_kind_of Hash
+      expect(usage.downloads_by_month).to be_type_of HASH
     end
 
     it "counts the total numver of pageviews" do
@@ -102,14 +102,6 @@ describe FileUsage, type: :model do
       expect(usage.to_flot[1][:label]).to eq("Downloads")
       expect(usage.to_flot[0][:data]).to include(*view_output)
       expect(usage.to_flot[1][:data]).to include(*download_output)
-    end
-
-    it "returns a daily download csv" do
-      expect(usage.daily_stats_csv).to eq("Year,Month,Day,Pageviews,Downloads\n2016,1,22,4,1\n2016,1,23,8,1\n2016,1,24,6,2\n2016,1,25,10,3\n2016,1,26,2,5\n")
-    end
-
-    it "returns a monthly download csv" do
-      expect(usage.monthly_stats_csv).to eq("Year,Month,Pageviews,Downloads\n2015,2,0,0\n2015,3,0,0\n2015,4,0,0\n2015,5,0,0\n2015,6,0,0\n2015,7,0,0\n2015,8,0,0\n2015,9,0,0\n2015,10,0,0\n2015,11,0,0\n2015,12,0,0\n2016,1,30,12\n")
     end
 
     let(:create_date) { DateTime.new(2014, 01, 01).iso8601 }

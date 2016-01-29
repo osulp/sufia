@@ -1,8 +1,7 @@
-<div class="stats-container" style="height:245px;">
-<table class="table table table-bordered table-analytics">
+<table class="table table table-bordered">
   <thead>
     <tr>
-      <th></th>
+      <th> X </th>
       <% @stats.date_list_for_monthly_table.each do |month| %>
         <th><%= month %></th>
       <% end %>
@@ -27,6 +26,4 @@
     </tr>
   </tbody>
 </table>
-<%= link_to "Daily Stats (CSV)", "/files/#{params[:id]}/daily_stats.csv" %> | 
-<%= link_to "Monthly Stats (CSV)", "/files/#{params[:id]}/monthly_stats.csv" %>
-</div>
+<%= link_to "Daily Stats (CSV)", "/files/#{params[:id]}/daily_stats.csv" %>

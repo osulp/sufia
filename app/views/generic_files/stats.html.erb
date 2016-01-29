@@ -22,21 +22,21 @@
     </div>
 
     <%= render "page_view_download_table" %>
-    <div class="about-stats-table-footer">
+    <div class="about-stats">
       <%= render partial: 'about_stats', locals: {about_block: @about_stats_table_text} %>
     </div>
 
     <div class="stats-container">
       <div id="usage-stats" class="stats-placeholder"></div>
     </div>
-    <div class="about-stats-table-footer">
+    <div class="about-stats">
       <%= render partial: 'about_stats', locals: {about_block: @about_stats_graph_text} %>
     </div>
 
     <div class="stats-container" style="height:150px;">
       <div id="overview" class="stats-placeholder"></div>
     </div>
-    <div class="about-stats-table-footer">
+    <div class="about-stats">
       <%= render partial: 'about_stats', locals: {about_block: @about_stats_overview_text} %>
     </div>
 
