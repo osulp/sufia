@@ -22,6 +22,8 @@ Sufia::Engine.routes.draw do
       resources :transfers, as: :generic_file_transfers, only: [:new, :create]
       get 'citation'
       get 'stats'
+      get 'daily_stats'
+      get 'monthly_stats'
       post 'audit'
     end
   end

@@ -37,14 +37,14 @@ module Sufia
 
       # actions: audit, index, create, new, edit, show, update,
       #          destroy, permissions, citation, stats
-      before_action :authenticate_user!, except: [:show, :citation, :stats]
+      before_action :authenticate_user!, except: [:show, :citation, :stats, :daily_stats, :monthly_stats]
       before_action :has_access?, except: [:show]
       before_action :build_breadcrumbs, only: [:show, :edit, :stats]
       before_action only: [:new] do
         find_collections_with_edit_access(true, -1, t("sufia.upload.collection.select_default_option"))
       end
       load_resource only: [:audit]
-      load_and_authorize_resource except: [:index, :audit, :show]
+      load_and_authorize_resource except: [:index, :audit, :show, :daily_stats, :monthly_stats]
 
       # since we are only displaying data we are makingthe show action fast by loading the information from solr
       # these two steps replace load_and_authorize_resource for the show action
@@ -75,7 +75,26 @@ module Sufia
 
     # routed to /files/:id/stats
     def stats
+      @about_stats_text = ContentBlock.find_or_create_by(name: ContentBlock::ABOUTSTATS)
+      @about_stats_table_text = ContentBlock.find_or_create_by(name: ContentBlock::ABOUTSTATSTABLE)
+      @about_stats_graph_text = ContentBlock.find_or_create_by(name: ContentBlock::ABOUTSTATSGRAPH)
+      @about_stats_overview_text = ContentBlock.find_or_create_by(name: ContentBlock::ABOUTSTATSOVERVIEW)
+
       @stats = FileUsage.new(params[:id])
+    end
+
+    # routed to /files/:id/daily_stats
+    def daily_stats
+      respond_to do |format|
+        format.csv { send_data stats.daily_stats_csv, filename: "daily_stats_#{params[:id]}.csv" }
+      end
+    end
+
+    # routed to /files/:id/monthly_stats
+    def monthly_stats
+      respond_to do |format|
+        format.csv { send_data stats.monthly_stats_csv, filename: "monthly_stats_#{params[:id]}.csv" }
+      end
     end
 
     # routed to /files/:id (DELETE)
