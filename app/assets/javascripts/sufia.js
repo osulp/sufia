@@ -57,11 +57,10 @@
 //= require sufia/autocomplete/location
 //= require sufia/autocomplete/subject
 //= require sufia/autocomplete/language
-
+//= require sufia/relationships
 //= require curation_concerns/collections
 //= require hydra-editor/hydra-editor
 //= require nestable
 
 // this needs to be after batch_select so that the form ids get setup correctly
 //= require sufia/batch_edit
-
