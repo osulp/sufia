@@ -160,8 +160,12 @@ en:
     generic_works:
       new:
         header: Add New Work
+        related_works: Related Works
+        related_external_url: Related External URL
       edit:
         header: Edit Work
+        related_works: Related Works
+        related_external_url: Related External URL
       progress:
         header: Save Work
       show:

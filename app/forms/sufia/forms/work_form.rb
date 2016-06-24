@@ -30,7 +30,7 @@ module Sufia::Forms
          :visibility_after_embargo, :visibility_during_lease,
          :lease_expiration_date, :visibility_after_lease, :visibility,
          :thumbnail_id, :representative_id, :ordered_member_ids,
-         :collection_ids]
+         :collection_ids, :related_url]
     end
 
     def self.multiple?(term)

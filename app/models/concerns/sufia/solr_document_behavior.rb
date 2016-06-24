@@ -37,6 +37,11 @@ module Sufia
       self[Solrizer.solr_name('related_url')]
     end
 
+    # TODO: Move to curation_concerns?
+    def is_referenced_by
+      self[Solrizer.solr_name('is_referenced_by')]
+    end
+
     def resource_type
       Array.wrap(self[Solrizer.solr_name("resource_type")])
     end

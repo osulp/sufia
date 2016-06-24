@@ -39,6 +39,7 @@ module Sufia
       # Strip out any BrowseEverthing files from the regular uploads.
       attributes[:uploaded_files] = uploaded_files -
                                     browse_everything_urls
+      attributes[:is_referenced_by] = params["generic_work"]["is_referenced_by"]
       attributes
     end
 

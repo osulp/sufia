@@ -4,3 +4,10 @@
       collection: available_collections(nil),
       input_html: { class: 'form-control', multiple: true } %>
 </div>
+
+<h3><%= t("sufia.#{controller_name}.#{action_name}.related_works") %></h3>
+<%= render_edit_field_partial(:is_referenced_by, f:f) %>
+
+<h3><%= t("sufia.#{controller_name}.#{action_name}.related_external_url") %></h3>
+<%= render_edit_field_partial(:related_url, f:f) %>
+

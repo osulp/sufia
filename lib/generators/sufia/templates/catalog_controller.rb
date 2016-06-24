@@ -68,6 +68,7 @@ class CatalogController < ApplicationController
     config.add_index_field solr_name("creator", :stored_searchable), label: "Creator", itemprop: 'creator'
     config.add_index_field solr_name("contributor", :stored_searchable), label: "Contributor", itemprop: 'contributor'
     config.add_index_field solr_name("proxy_depositor", :symbol), label: "Depositor", helper_method: :link_to_profile
+    config.add_index_field solr_name("is_referenced_by", :stored_searchable), label: "Is Referenced By", link_to_search: solr_name("is_referenced_by", :facetable)
     config.add_index_field solr_name("depositor"), label: "Owner", helper_method: :link_to_profile
     config.add_index_field solr_name("publisher", :stored_searchable), label: "Publisher", itemprop: 'publisher'
     config.add_index_field solr_name("based_near", :stored_searchable), label: "Location", itemprop: 'contentLocation'
@@ -98,6 +99,7 @@ class CatalogController < ApplicationController
     config.add_show_field solr_name("resource_type", :stored_searchable), label: "Resource Type"
     config.add_show_field solr_name("format", :stored_searchable), label: "File Format"
     config.add_show_field solr_name("identifier", :stored_searchable), label: "Identifier"
+    config.add_show_field solr_name("is_referenced_by", :stored_searchable), label: "Is Referenced By"
 
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields
@@ -254,6 +256,14 @@ class CatalogController < ApplicationController
 
     config.add_search_field('rights') do |field|
       solr_name = solr_name("rights", :stored_searchable)
+      field.solr_local_parameters = {
+        qf: solr_name,
+        pf: solr_name
+      }
+    end
+
+    config.add_search_field('is_referenced_by') do |field|
+      solr_name = solr_name("is_referenced_by", :stored_searchable)
       field.solr_local_parameters = {
         qf: solr_name,
         pf: solr_name

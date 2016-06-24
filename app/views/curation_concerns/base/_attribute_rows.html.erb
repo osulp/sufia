@@ -8,4 +8,5 @@
 <%= presenter.attribute_to_html(:date_created) %>
 <%= presenter.attribute_to_html(:based_near) %>
 <%= presenter.attribute_to_html(:related_url) %>
+<%= presenter.attribute_to_html(:is_referenced_by, render_as: :faceted) %>
 <%= presenter.attribute_to_html(:resource_type) %>
