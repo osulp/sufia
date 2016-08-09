@@ -42,3 +42,17 @@ end
 CurationConcerns.config.callback.set(:after_import_url_failure) do |file_set, user|
   Sufia::ImportUrlFailureService.new(file_set, user).call
 end
+
+CurationConcerns::Forms::WorkForm.class_eval do
+  # The ordered_members which are FileSet types
+  # @return [Array] All of the file sets in the ordered_members
+  def ordered_fileset_members
+    model.ordered_members.to_a.select { |m| m.model_name.singular.to_sym == :file_set }
+  end
+
+  # The ordered_members which are not FileSet types
+  # @return [Array] All of the non file sets in the ordered_members
+  def ordered_work_members
+    model.ordered_members.to_a.select { |m| m.model_name.singular.to_sym != :file_set }
+  end
+end

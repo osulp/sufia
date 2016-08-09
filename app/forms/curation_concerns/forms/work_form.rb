@@ -38,18 +38,6 @@ module CurationConcerns
         Hash[file_presenters.map { |file| [file.to_s, file.id] }]
       end
 
-      # The ordered_members which are FileSet types
-      # @return [Array] All of the file sets in the ordered_members
-      def ordered_fileset_members
-        model.ordered_members.to_a.select { |m| m.model_name.singular.to_sym == :file_set }
-      end
-
-      # The ordered_members which are not FileSet types
-      # @return [Array] All of the non file sets in the ordered_members
-      def ordered_work_members
-        model.ordered_members.to_a.select { |m| m.model_name.singular.to_sym != :file_set }
-      end
-
       class << self
         # This determines whether the allowed parameters are single or multiple.
         # By default it delegates to the model.
